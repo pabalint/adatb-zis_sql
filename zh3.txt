@@ -1,0 +1,23 @@
+1. feladat
+Filter: {"countries.0": "USA", "imdb.rating": {$gt: 4.9}}
+Project: {title: 1, countries: 1, "imdb.rating": 1, _id: 0}
+Sort: {"imdb.rating": 1}
+
+2. feladat
+db.users.find({email: {$regex: /.com/}}, {name: 1, email: 1, _id: 0})
+
+3. feladat
+db.movies.aggregate([{$match: {year: {$gt: 1950}}},{$group: {_id: "$rated", avgruntime: {$avg: "$runtime"}}}])
+
+4. feladat
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE m.released > 1960
+RETURN p.name as név, m.title as cím, m.released as kiadás_éve
+ORDER BY m.released desc
+
+5. feladat
+MATCH (p:Person)-[:DIRECTED]->(m:Movie)
+WHERE m.released < 2000
+WITH p.name as nev, count(*) as db
+WHERE db > 1
+RETURN nev, db
