@@ -1,0 +1,60 @@
+token@cqlsh:gyak> INSER INTO szemely(nev, szulev, foglalkozas) VALUES ('Kiss Bela', 2000, 'lakatos');
+SyntaxException: line 1:0 no viable alternative at input 'INSER' ([INSER]...)
+token@cqlsh:gyak> INSERT INTO szemely(nev, szulev, foglalkozas) VALUES ('Kiss Bela', 2000, 'lakatos');
+token@cqlsh:gyak> SELECT * FROM szemely;
+
+ nev       | szulev | foglalkozas
+-----------+--------+-------------
+ Kiss Bela |   2000 |     lakatos
+
+(1 rows)
+token@cqlsh:gyak> ALTER TABLE szemely
+        ... ADD vegzettseg LIST<TEXT>;
+token@cqlsh:gyak> SELECT * FROM szemely;
+
+ nev       | szulev | foglalkozas | vegzettseg
+-----------+--------+-------------+------------
+ Kiss Bela |   2000 |     lakatos |       null
+
+(1 rows)
+token@cqlsh:gyak> UPDATE szemely
+        ... SET vegzettseg = ['gepesz', 'muszeresz']
+        ... WHERE nev = 'Kiss Bela' AND szulev = 2000 AND foglalkozas = 'lakatos';
+token@cqlsh:gyak> select * from szemely
+        ... ;
+
+ nev       | szulev | foglalkozas | vegzettseg
+-----------+--------+-------------+-------------------------
+ Kiss Bela |   2000 |     lakatos | ['gepesz', 'muszeresz']
+
+(1 rows)
+token@cqlsh:gyak> ALTER TABLE szemely
+        ... ADD nyelvtudas SET<TEXT>;
+token@cqlsh:gyak> UPDATE szemely
+        ... SET nyelvtudas = {'angol', 'francia'}
+        ... WHERE nev = 'Kiss Bela' AND szulev = 2000 AND foglalkozas = 'lakatos' AND vegzettseg = ['gepesz', 'muszeresz']
+        ... ;
+InvalidRequest: Error from server: code=2200 [Invalid query] message="Collection column 'vegzettseg' (list<text>) cannot be restricted by a '=' relation"
+token@cqlsh:gyak> UPDATE szemely SET nyelvtudas = {'angol', 'francia'} WHERE nev = 'Kiss Bela' AND szulev = 2000 AND foglalkozas = 'lakatos';
+token@cqlsh:gyak> select *from szemely
+        ... ;
+
+ nev       | szulev | foglalkozas | nyelvtudas           | vegzettseg
+-----------+--------+-------------+----------------------+-------------------------
+ Kiss Bela |   2000 |     lakatos | {'angol', 'francia'} | ['gepesz', 'muszeresz']
+
+(1 rows)
+token@cqlsh:gyak> 
+token@cqlsh:gyak> ALTER TABLE szemely
+        ... ADD autok MAP<TEXT, TEXT>;
+token@cqlsh:gyak> UPDATE szemely
+        ... SET autok['AUDI'] = 'abc-123'
+        ... WHERE nev = 'Kiss Bela' AND szulev = 2000 AND foglalkozas = 'lakatos';
+token@cqlsh:gyak> SELECT * FROM szemely;
+
+ nev       | szulev | foglalkozas | autok               | nyelvtudas           | vegzettseg
+-----------+--------+-------------+---------------------+----------------------+-------------------------
+ Kiss Bela |   2000 |     lakatos | {'AUDI': 'abc-123'} | {'angol', 'francia'} | ['gepesz', 'muszeresz']
+
+(1 rows)
+token@cqlsh:gyak> 
